@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=mpi_gan_training
-#SBATCH --output=mpi_gan_%j.txt
+#SBATCH --job-name=Test_gan_training
+#SBATCH --output=test_gan_%j.txt
 #SBATCH --time=08:00:00
 #SBATCH --nodes=2                   # Use 2 compute nodes
 #SBATCH --ntasks-per-node=4         # Use 4 tasks per node
