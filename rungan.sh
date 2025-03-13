@@ -19,4 +19,4 @@ module load openmpi/gcc/64/1.10.4
 source .venv/bin/activate
 
 # Run with MPI
-mpirun -np 8 python main.py
+python main.py
