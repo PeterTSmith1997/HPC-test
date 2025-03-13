@@ -7,7 +7,7 @@
 #SBATCH --gres=gpu:1                # Request 1 GPU per node
 #SBATCH --cpus-per-task=4           # Use 4 CPU cores per task
 #SBATCH --mem=32GB                  # Request 32GB memory
-
+#SBATCH --partition=48hour              # Use GPU partition (check `sinfo`)
 #SBATCH --mail-user=peter.t.smith@northumbria.ac.uk
 #SBATCH --mail-type=ALL
 
