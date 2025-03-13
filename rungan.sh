@@ -4,7 +4,6 @@
 #SBATCH --time=08:00:00
 #SBATCH --nodes=2                   # Use 2 compute nodes
 #SBATCH --ntasks-per-node=4         # Use 4 tasks per node
-#SBATCH --gres=gpu:1                # Request 1 GPU per node
 #SBATCH --cpus-per-task=4           # Use 4 CPU cores per task
 #SBATCH --mem=32GB                  # Request 32GB memory
 #SBATCH --partition=48hour              # Use GPU partition (check `sinfo`)
