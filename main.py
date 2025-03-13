@@ -147,8 +147,23 @@ for epoch in range(num_epochs):
     gen_loss = criterion(fake_preds, real_labels)  # Generator tries to fool the discriminator
     gen_loss.backward()
     gen_optimizer.step()
-    
+      
     if (epoch+1) % 200 == 0:
-        print(f"Epoch {epoch+1}/{num_epochs} | Disc Loss: {disc_loss
-::contentReference[oaicite:0]{index=0}
+        print(f"Epoch {epoch+1}/{num_epochs} | Disc Loss: {disc_loss.item():.4f} | Gen Loss: {gen_loss.item():.4f}")
+
+# --- Generate New Sentences ---
+noise = torch.randn(5, noise_dim, device=device)
+generated = generator(noise)
+generated_indices = generated.argmax(dim=2).cpu().numpy()
+
+# Build inverse vocabulary mapping
+inv_vocab = {v: k for k, v in vocab.items()}
+generated_sentences = []
+for idx_seq in generated_indices:
+    words_seq = [inv_vocab.get(idx, "") for idx in idx_seq]
+    generated_sentences.append(" ".join(words_seq))
+    
+print("\nGenerated Sentences:")
+for sent in generated_sentences:
+    print(sent)
  
