@@ -77,14 +77,12 @@ class Generator(nn.Module):
         return outputs
 
 class Discriminator(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, max_len, batch_size):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, max_len):
         super(Discriminator, self).__init__()
         self.embed = nn.Embedding(vocab_size, embedding_dim)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, batch_first=True)
         self.fc = nn.Linear(hidden_dim, 1)
-        self.batch_size = batch_size
-        self.minibatch_fc = nn.Linear(hidden_dim, 1)
-    
+        
     def forward(self, x):
         # If input is a probability distribution, convert it to token indices via argmax.
         if x.dim() == 3:
@@ -93,16 +91,15 @@ class Discriminator(nn.Module):
         _, (hn, _) = self.lstm(embedded)
         hn = hn.squeeze(0)
         out = self.fc(hn)
-        minibatch_out = self.minibatch_fc(hn)
-        return torch.sigmoid(out), minibatch_out
+        return torch.sigmoid(out)
 
 # Instantiate models
 generator = Generator(noise_dim, hidden_dim, vocab_size, embedding_dim, max_len).to(device)
-discriminator = Discriminator(vocab_size, embedding_dim, hidden_dim, max_len, batch_size).to(device)
+discriminator = Discriminator(vocab_size, embedding_dim, hidden_dim, max_len).to(device)
 
 # --- Optimizers and Loss ---
-gen_optimizer = optim.Adam(generator.parameters(), lr=0.0001)
-disc_optimizer = optim.Adam(discriminator.parameters(), lr=0.001)
+gen_optimizer = optim.Adam(generator.parameters(), lr=0.001)
+disc_optimizer = optim.Adam(discriminator.parameters(), lr=0.004)
 criterion = nn.BCELoss()
 
 # Move real data to device and prepare labels
@@ -115,27 +112,15 @@ num_epochs = 2000
 for epoch in range(num_epochs):
     # --- Train Discriminator ---
     disc_optimizer.zero_grad()
-    real_preds, real_minibatch = discriminator(real_data)
+    real_preds = discriminator(real_data)
     real_loss = criterion(real_preds, real_labels)
     
     noise = torch.randn(batch_size, noise_dim, device=device)
     fake_data = generator(noise)
-    fake_preds, fake_minibatch = discriminator(fake_data.detach())
+    fake_preds = discriminator(fake_data.detach())
     fake_loss = criterion(fake_preds, fake_labels)
     
-    # Compute gradient penalty
-    epsilon = torch.rand(batch_size, 1, device=device)
-    interpolated_data = epsilon * real_data + (1 - epsilon) * fake_data.detach()
-    interpolated_data.requires_grad_(True)
-    interpolated_preds, _ = discriminator(interpolated_data)
-    gradients = torch.autograd.grad(outputs=interpolated_preds, inputs=interpolated_data,
-                                  grad_outputs=torch.ones_like(interpolated_preds),
-                                  create_graph=True, retain_graph=True, only_inputs=True)[0]
-    gradients = gradients.view(batch_size, -1)
-    gradient_norms = gradients.norm(2, dim=1)
-    gradient_penalty = ((gradient_norms - 1) ** 2).mean()
-    disc_loss += 10 * gradient_penalty  # Adjust the coefficient as needed
-    
+    disc_loss = real_loss + fake_loss
     disc_loss.backward()
     disc_optimizer.step()
     
@@ -143,11 +128,11 @@ for epoch in range(num_epochs):
     gen_optimizer.zero_grad()
     noise = torch.randn(batch_size, noise_dim, device=device)
     fake_data = generator(noise)
-    fake_preds, _ = discriminator(fake_data)
+    fake_preds = discriminator(fake_data)
     gen_loss = criterion(fake_preds, real_labels)  # Generator tries to fool the discriminator
     gen_loss.backward()
     gen_optimizer.step()
-      
+    
     if (epoch+1) % 200 == 0:
         print(f"Epoch {epoch+1}/{num_epochs} | Disc Loss: {disc_loss.item():.4f} | Gen Loss: {gen_loss.item():.4f}")
 
@@ -166,4 +151,3 @@ for idx_seq in generated_indices:
 print("\nGenerated Sentences:")
 for sent in generated_sentences:
     print(sent)
- 
