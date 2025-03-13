@@ -16,7 +16,7 @@ module load CUDA/10.0.130_410.79
 module load openmpi/gcc/64/1.10.4
 
 # Activate Virtual Environment
-source ~/my_project/.venv/bin/activate
+source .venv/bin/activate
 
 # Run with MPI
 mpirun -np 8 python main.py
