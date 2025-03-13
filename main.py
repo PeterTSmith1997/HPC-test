@@ -99,7 +99,7 @@ discriminator = Discriminator(vocab_size, embedding_dim, hidden_dim, max_len).to
 
 # --- Optimizers and Loss ---
 gen_optimizer = optim.Adam(generator.parameters(), lr=0.001)
-disc_optimizer = optim.Adam(discriminator.parameters(), lr=0.001)
+disc_optimizer = optim.Adam(discriminator.parameters(), lr=0.004)
 criterion = nn.BCELoss()
 
 # Move real data to device and prepare labels
