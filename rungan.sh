@@ -17,7 +17,7 @@ module load CUDA/10.0.130_410.79  # Load CUDA if needed
 # Activate Miniconda
 export PATH=~/miniconda3/bin:$PATH
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate hpc_env
+conda activate test
 
 # Debugging Info
 echo "Using Python: $(which python)"
