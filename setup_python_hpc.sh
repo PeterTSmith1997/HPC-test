@@ -1,26 +1,22 @@
 #!/bin/bash
 
-# Ensure Miniconda is initialized for your shell
-echo "Initializing Miniconda..."
-~/miniconda3/bin/conda init
-
-# Reload shell to apply changes
-exec $SHELL
 
 # Define environment name and Python version
 ENV_NAME="hpc_env"
 PYTHON_VERSION="3.9"
+ENV_PATH="$(pwd)/$ENV_NAME"
 
-# Create a Conda environment
-echo "Creating Conda environment: $ENV_NAME with Python $PYTHON_VERSION..."
-conda create -n $ENV_NAME python=$PYTHON_VERSION -y
+# Create a Conda environment in the current directory
+echo "Creating Conda environment: $ENV_NAME in $(pwd) with Python $PYTHON_VERSION..."
+conda create --prefix "$ENV_PATH" python=$PYTHON_VERSION -y
 
 # Activate the environment
-echo "Activating Conda environment: $ENV_NAME..."
-conda activate $ENV_NAME
+echo "Activating Conda environment: $ENV_PATH..."
+source "$ENV_PATH/bin/activate"
 
 # Install necessary packages
 echo "Installing required packages..."
-conda install numpy scipy matplotlib -y
+conda install numpy scipy matplotlib pytorch torchvision torchaudio pytorch-cuda -c pytorch -c nvidia -y
 
-echo "Setup complete. You are now using Conda environment: $ENV_NAME"
+
+echo "Setup complete. You are now using Conda environment: $ENV_PATH"
