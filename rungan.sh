@@ -23,5 +23,11 @@ conda activate hpc_env
 echo "Using Python: $(which python)"
 echo "Using Conda Env: $(conda info --envs)"
 
-# Run Python script (No MPI)
-python main.py
+# Set number of processes (one per task)
+export WORLD_SIZE=$SLURM_NTASKS
+export MASTER_ADDR=$(hostname)  # Set the master node address
+export MASTER_PORT=12355        # Port for communication
+
+# Run the training script using torchrun (PyTorch's utility for multi-node)
+# We set the rank for each node automatically using SLURM's task environment variables
+torchrun --nproc_per_node=$SLURM_NTASKS --nnodes=$SLURM_NODES --node_rank=$SLURM_NODEID --master_addr=$MASTER_ADDR --master_port=$MASTER_PORT main.py
