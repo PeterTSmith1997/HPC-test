@@ -16,7 +16,7 @@ source "$ENV_PATH/bin/activate"
 
 # Install necessary packages
 echo "Installing required packages..."
-conda install numpy scipy matplotlib pytorch torchvision torchaudio pytorch-cuda -c pytorch -c nvidia -y
+conda install numpy scipy matplotlib pytorch torchvision torchaudio nltk pytorch-cuda -c pytorch -c nvidia -y
 
 
 echo "Setup complete. You are now using Conda environment: $ENV_PATH"
